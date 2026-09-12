@@ -1,0 +1,34 @@
+POST http://localhost/inventa_tech/productos.php
+Content-Type: application/json
+
+{
+  "id_producto": "PRD-002",
+  "id_categoria": "CAT-01",
+  "sku": "LAP-GAMER-16",
+  "nombre": "Laptop Gamer RTX",
+  "precio_actual": 1850.50,
+  "stock_actual": 12,
+  "especificaciones": {
+    "procesador": "AMD Ryzen 9",
+    "ram": "32GB",
+    "grafica": "RTX 4070"
+  }
+}
+
+### Actualizar precio y stock de un producto existente (PUT)
+PUT http://localhost/inventa_tech/productos.php
+Content-Type: application/json
+
+{
+  "id_producto": "PRD-002",
+  "precio_actual": 1700.00,
+  "stock_actual": 5
+}
+
+### Eliminar un producto (DELETE)
+DELETE http://localhost/inventa_tech/productos.php
+Content-Type: application/json
+
+{
+  "id_producto": "PRD-002"
+}
