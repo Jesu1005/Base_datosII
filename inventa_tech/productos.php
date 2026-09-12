@@ -14,7 +14,6 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 switch ($metodo) {
     case 'GET': // Operación de Lectura (Read)
         try {
-            // Preparamos y ejecutamos la consulta
             $stmt = $pdo->query("SELECT * FROM producto");
             $productos = $stmt->fetchAll();
 
@@ -26,7 +25,6 @@ switch ($metodo) {
                 }
             }
 
-            // Enviamos la respuesta exitosa
             echo json_encode([
                 "status" => "success",
                 "total" => count($productos),
@@ -34,35 +32,45 @@ switch ($metodo) {
             ]);
 
         } catch (PDOException $e) {
-            echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Error al consultar productos"]);
         }
         break;
+
     case 'POST': // Operación de Creación (Create)
         try {
-            // 1. Leer el JSON que envía el frontend o Thunder Client
             $inputJSON = file_get_contents('php://input');
-            $data = json_decode($inputJSON, true); // Convertirlo a un array de PHP
+            $data = json_decode($inputJSON, true);
 
-            // 2. Validación básica para que no inserten productos vacíos
-            if (!isset($data['id_producto']) || !isset($data['nombre'])) {
+            if (!is_array($data) || !isset($data['id_producto']) || !isset($data['nombre'])) {
+                http_response_code(400);
                 echo json_encode(["status" => "error", "message" => "Faltan datos obligatorios (id_producto o nombre)"]);
                 break;
             }
 
-            // 3. Preparar la consulta SQL (evita inyecciones SQL usando ':parametros')
+            // Validación de tipos básicos
+            if (isset($data['precio_actual']) && !is_numeric($data['precio_actual'])) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "precio_actual debe ser numérico"]);
+                break;
+            }
+            if (isset($data['stock_actual']) && !is_numeric($data['stock_actual'])) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "stock_actual debe ser numérico"]);
+                break;
+            }
+
             $sql = "INSERT INTO producto (id_producto, id_categoria, sku, nombre, precio_actual, stock_actual, especificaciones) 
                     VALUES (:id_producto, :id_categoria, :sku, :nombre, :precio_actual, :stock_actual, :especificaciones)";
-            
+
             $stmt = $pdo->prepare($sql);
 
-            // TRUCO JSONB: Si mandaron especificaciones, las volvemos a convertir a String JSON 
-            // porque PostgreSQL necesita recibir un string para guardarlo en la columna JSONB
+            // TRUCO JSONB: convertir especificaciones a String JSON para guardarlo en la columna JSONB
             $especificacionesJSON = isset($data['especificaciones']) ? json_encode($data['especificaciones']) : '{}';
 
-            // 4. Ejecutar la consulta inyectando los valores de forma segura
             $stmt->execute([
                 ':id_producto' => $data['id_producto'],
-                ':id_categoria' => $data['id_categoria'] ?? null, // Si no viene, pone null
+                ':id_categoria' => $data['id_categoria'] ?? null,
                 ':sku' => $data['sku'] ?? null,
                 ':nombre' => $data['nombre'],
                 ':precio_actual' => $data['precio_actual'] ?? 0,
@@ -70,8 +78,7 @@ switch ($metodo) {
                 ':especificaciones' => $especificacionesJSON
             ]);
 
-            // 5. Responder con éxito
-            http_response_code(201); // 201 significa "Creado"
+            http_response_code(201); // Creado
             echo json_encode([
                 "status" => "success",
                 "message" => "Producto registrado correctamente"
@@ -79,21 +86,32 @@ switch ($metodo) {
 
         } catch (PDOException $e) {
             // Si el ID ya existe o la categoría no existe, caerá aquí
-            http_response_code(400); // 400 significa "Bad Request"
-            echo json_encode(["status" => "error", "message" => "Error de base de datos: " . $e->getMessage()]);
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "No se pudo crear el producto (id_producto duplicado o id_categoria inválido)"]);
         }
         break;
+
     case 'PUT': // Operación de Actualización (Update)
         try {
             $inputJSON = file_get_contents('php://input');
             $data = json_decode($inputJSON, true);
 
-            if (!isset($data['id_producto'])) {
+            if (!is_array($data) || !isset($data['id_producto'])) {
+                http_response_code(400);
                 echo json_encode(["status" => "error", "message" => "Falta el id_producto para actualizar"]);
                 break;
             }
+            if (!isset($data['precio_actual']) || !isset($data['stock_actual'])) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "Faltan precio_actual o stock_actual"]);
+                break;
+            }
+            if (!is_numeric($data['precio_actual']) || !is_numeric($data['stock_actual'])) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "precio_actual y stock_actual deben ser numéricos"]);
+                break;
+            }
 
-            // Actualizaremos el precio y el stock como ejemplo
             $sql = "UPDATE producto SET precio_actual = :precio, stock_actual = :stock WHERE id_producto = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -102,10 +120,17 @@ switch ($metodo) {
                 ':id' => $data['id_producto']
             ]);
 
+            if ($stmt->rowCount() === 0) {
+                http_response_code(404);
+                echo json_encode(["status" => "error", "message" => "No existe un producto con ese id_producto"]);
+                break;
+            }
+
             echo json_encode(["status" => "success", "message" => "Inventario y precio actualizados"]);
 
         } catch (PDOException $e) {
-            echo json_encode(["status" => "error", "message" => "Error de base de datos: " . $e->getMessage()]);
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Error al actualizar el producto"]);
         }
         break;
 
@@ -114,7 +139,8 @@ switch ($metodo) {
             $inputJSON = file_get_contents('php://input');
             $data = json_decode($inputJSON, true);
 
-            if (!isset($data['id_producto'])) {
+            if (!is_array($data) || !isset($data['id_producto'])) {
+                http_response_code(400);
                 echo json_encode(["status" => "error", "message" => "Falta el id_producto para eliminar"]);
                 break;
             }
@@ -122,6 +148,12 @@ switch ($metodo) {
             $sql = "DELETE FROM producto WHERE id_producto = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $data['id_producto']]);
+
+            if ($stmt->rowCount() === 0) {
+                http_response_code(404);
+                echo json_encode(["status" => "error", "message" => "No existe un producto con ese id_producto"]);
+                break;
+            }
 
             echo json_encode(["status" => "success", "message" => "Producto eliminado del sistema"]);
 
@@ -131,11 +163,9 @@ switch ($metodo) {
             echo json_encode(["status" => "error", "message" => "No se puede eliminar porque tiene transacciones asociadas."]);
         }
         break;
-    
 
     default:
-        // Si intentan usar un método que aún no programamos
+        http_response_code(405); // Método no permitido
         echo json_encode(["status" => "error", "message" => "Método no soportado"]);
         break;
 }
-?>
