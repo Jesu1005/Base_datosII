@@ -155,6 +155,20 @@ El informe (`docs/Semana 1 proyecto.docx`) incluye un documento `inventario.xml`
 //producto[@id_categoria='CAT-01']/nombre/text()
 ```
 
+## Plan semanal (Grupo 3)
+
+**Proyecto asignado:** Sistema de Gestión de Inventario y Ventas | **Tecnología/SGBD:** PostgreSQL + JSONB | **Enfoque:** Multimodelo (Relacional + JSON)
+
+### Entregables por semana
+
+| Semana | Entregables |
+|---|---|
+| **I — Modelado, Fundamentos XML y Consultas Iniciales** | Documento técnico + archivos de modelo: nombre del proyecto, descripción del problema, justificación, objetivo general, tres objetivos específicos, usuarios del sistema, cinco procesos principales, lista inicial de objetos, modelo conceptual (Diagrama de Clases UML/ER), diez preguntas del sistema, documento XML inicial, DTD de validación y cinco consultas XPath ✅ *[docs/Semana 1 proyecto.docx](docs/Semana%201%20proyecto.docx)* |
+| **II — Arquitectura, Persistencia e Interfaz Web (JSON + PHP)** | Integración del modelo con una aplicación web funcional: configuración/conexión de la BD (PostgreSQL+JSONB), interfaz web en PHP con respuestas JSON y operaciones CRUD operativas ✅ *[inventa_tech/](inventa_tech/)* |
+| **III — Reglas de Negocio, Mecanismos de Búsqueda y Distribución** | Triggers (validación/auditoría), procedimientos almacenados (PL/pgSQL), vistas optimizadas e índices; mecanismos de búsqueda avanzados y simulación de fragmentación/distribución de datos o almacenamiento remoto |
+| **IV — Incorporación de Datos Especializados** | Datos temporales y no estructurados: histórico de precios y catálogos de especificaciones de productos dinámicos en JSONB |
+| **V — Integración Final, Presentación y Cuadro Comparativo** | Defensa pública con demostración en vivo, lámina con cuadro comparativo técnico (Relacional Puro, Multimodelo JSONB/XML, NoSQL Documental, Espacial PostGIS) y entrega del repositorio final |
+
 ## Integrantes
 
 - Erick Sumoza 26.262.467
