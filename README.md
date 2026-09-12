@@ -1,18 +1,20 @@
 # InventaTech
 
-Sistema de gestión de inventarios, ventas, proveedores y clientes para la tienda de tecnología **InventaTech**, desarrollado como proyecto de la asignatura **Sistemas de Bases de Datos II** (UNEG - Ingeniería en Informática).
+**Proyecto 3 (Grupo 3): Sistema de Gestión de Inventario y Ventas de una Tienda** — inventario, proveedores, ventas, clientes y órdenes de compra para una tienda de productos electrónicos, desarrollado como proyecto de la asignatura **Sistemas de Bases de Datos II** (UNEG - Ingeniería en Informática).
 
-El proyecto implementa una **arquitectura de datos multimodelo en PostgreSQL**, combinando el modelo relacional (transacciones ACID) con capacidades semiestructuradas (JSONB) para fichas técnicas dinámicas de productos, además de un motor de validación XML/XPath para interoperabilidad con sistemas externos.
+El proyecto implementa una **arquitectura de datos multimodelo en PostgreSQL + JSONB**, combinando el modelo relacional (transacciones ACID) con capacidades semiestructuradas para fichas técnicas dinámicas de productos, más datos temporales para el histórico de variaciones de precios y un motor de validación XML/XPath para interoperabilidad con sistemas externos.
 
-## Descripción del problema
+## Contexto
 
-Actualmente la empresa gestiona sus operaciones mediante hojas de cálculo descentralizadas y aisladas, lo que genera:
+Una tienda de productos electrónicos desea gestionar su inventario, proveedores, ventas, clientes y órdenes de compra. Actualmente, el control se realiza mediante hojas de cálculo y no existe integración entre los procesos.
 
-- **Desincronización de inventario**: pérdida de trazabilidad del stock en tiempo real.
-- **Desvinculación transaccional**: omisión de integridad referencial entre ventas y los ítems del catálogo.
-- **Ceguera de proveedores y clientes**: ausencia de un modelo estructurado para proveedores e historial analítico de compras.
-- **Deficiencia analítica**: imposibilidad de generar reportes de rendimiento consolidados.
-- **Rigidez en especificaciones de producto**: incapacidad de almacenar fichas técnicas cambiantes en esquemas relacionales rígidos.
+## Problema
+
+- El inventario no está actualizado en tiempo real.
+- Las ventas no se asocian correctamente con los productos.
+- No se lleva control de los proveedores.
+- Es difícil generar reportes de ventas.
+- No existe un historial de compras por cliente.
 
 ## Objetivos
 
@@ -40,6 +42,35 @@ Actualmente la empresa gestiona sus operaciones mediante hojas de cálculo desce
 - **Administrador de inventario**: alta/baja de productos, control de stock y órdenes de compra.
 - **Gerente de tienda**: tableros de control y reportes analíticos de ventas.
 - **Proveedor**: consulta de órdenes de compra asignadas y suministro de catálogos.
+
+## Procesos principales
+
+- Registrar productos
+- Registrar categorías
+- Registrar proveedores
+- Registrar clientes
+- Registrar ventas
+- Registrar órdenes de compra
+- Actualizar inventario
+- Generar reportes de ventas
+
+## Preguntas que el sistema debe responder
+
+- ¿Qué productos existen en una categoría?
+- ¿Qué productos tiene un proveedor?
+- ¿Qué ventas realizó un cliente?
+- ¿Cuál es el producto más vendido?
+- ¿Qué productos tienen bajo inventario?
+- ¿Cuántas ventas se realizaron en un mes?
+- ¿Qué clientes compraron en una fecha determinada?
+- ¿Qué productos se vendieron en una venta específica?
+- ¿Qué proveedores suministran una categoría?
+- ¿Cuál es el total de ventas por mes?
+
+## Especificación tecnológica y enfoque de datos
+
+- **SGBD asignado**: PostgreSQL + **JSONB** (enfoque multimodelo).
+- **Manejo de datos especializados (Semana IV)**: datos temporales y estructuras variables — fichas técnicas cambiantes de artículos de tecnología almacenadas en `JSONB` e histórico de variaciones de precios de productos a lo largo del tiempo.
 
 ## Modelo de datos
 
