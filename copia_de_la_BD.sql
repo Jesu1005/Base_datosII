@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict tpXhMZ8LO8mXyZxocViE3xzD3lEklqDULFNokHBhkMNRfyr4IMcBJGHdmrrfTG9
+\restrict ZOWHOVNXCkJsjU2zxc1zA6OFiAplFNv7nuZ7cMda5Vpzs5WyzYzkocLTphYk5N3
 
 -- Dumped from database version 17.11 (Debian 17.11-1.pgdg13+2)
 -- Dumped by pg_dump version 17.11 (Debian 17.11-1.pgdg13+2)
@@ -18,6 +18,20 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
 
 SET default_tablespace = '';
 
@@ -228,6 +242,97 @@ ALTER TABLE ONLY public.venta
 
 
 --
+-- Name: idx_detalle_orden_id_orden; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_detalle_orden_id_orden ON public.detalle_orden USING btree (id_orden);
+
+
+--
+-- Name: idx_detalle_orden_id_producto; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_detalle_orden_id_producto ON public.detalle_orden USING btree (id_producto);
+
+
+--
+-- Name: idx_detalle_venta_id_producto; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_detalle_venta_id_producto ON public.detalle_venta USING btree (id_producto);
+
+
+--
+-- Name: idx_detalle_venta_id_venta; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_detalle_venta_id_venta ON public.detalle_venta USING btree (id_venta);
+
+
+--
+-- Name: idx_historico_precio_id_producto; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_historico_precio_id_producto ON public.historico_precio USING btree (id_producto);
+
+
+--
+-- Name: idx_orden_compra_fecha_emision; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_orden_compra_fecha_emision ON public.orden_compra USING btree (fecha_emision);
+
+
+--
+-- Name: idx_orden_compra_id_proveedor; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_orden_compra_id_proveedor ON public.orden_compra USING btree (id_proveedor);
+
+
+--
+-- Name: idx_producto_especificaciones_gin; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_producto_especificaciones_gin ON public.producto USING gin (especificaciones);
+
+
+--
+-- Name: idx_producto_id_categoria; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_producto_id_categoria ON public.producto USING btree (id_categoria);
+
+
+--
+-- Name: idx_producto_id_proveedor; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_producto_id_proveedor ON public.producto USING btree (id_proveedor);
+
+
+--
+-- Name: idx_producto_nombre_trgm; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_producto_nombre_trgm ON public.producto USING gin (nombre public.gin_trgm_ops);
+
+
+--
+-- Name: idx_venta_fecha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_venta_fecha ON public.venta USING btree (fecha);
+
+
+--
+-- Name: idx_venta_id_cliente; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_venta_id_cliente ON public.venta USING btree (id_cliente);
+
+
+--
 -- Name: detalle_orden detalle_orden_id_orden_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -303,5 +408,5 @@ ALTER TABLE ONLY public.venta
 -- PostgreSQL database dump complete
 --
 
-\unrestrict tpXhMZ8LO8mXyZxocViE3xzD3lEklqDULFNokHBhkMNRfyr4IMcBJGHdmrrfTG9
+\unrestrict ZOWHOVNXCkJsjU2zxc1zA6OFiAplFNv7nuZ7cMda5Vpzs5WyzYzkocLTphYk5N3
 
